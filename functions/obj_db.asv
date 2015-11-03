@@ -1,0 +1,68 @@
+classdef (Abstract) obj_db<handle
+    %OBJ_DB Summary of this class goes here
+    %   Detailed explanation goes here
+    
+    properties
+        name
+        info
+        objs
+    end
+    
+    methods
+        
+        function obj=obj_db(name,info,objs)
+            
+            if nargin<3
+                objs=[];
+            end
+            
+            obj.name=name;
+            obj.info=info;
+            
+            for i=1:length(objs)
+                obj.objs=objs(i);
+                objs(i).id=i;
+            end
+            
+        end
+        
+        function [flag,obj]=query_db(dbobj,fh,fields)
+        % query_obj function
+        %
+        % Inputs:
+        % dbobj - 1x1 object database - database to query
+        % fh - 1x1 function handle - function handle to use for querying
+        % fields - nx1 cell array - fields to check each query against
+        %
+        % Example:
+        % [flag,objects]=query_obj(database,@(x1,x2,x3)
+        % (strcmp(x1,'hi')&&strcmp(x2,
+            obj=[];
+            
+            j=1;
+            for i=1:length(dbobj.objs)
+                % this is pretty ugly- probably want to change it later
+                x=cell(length(fields,1)); % pre-alloc
+                for k=1:length(fields)
+                    x{k}=dbobj.objs(j).(fields{k});
+                end
+               
+                if fh(x{:})
+                    obj(j)=dbojb.objs(j);
+                    j=j+1;
+                end
+                
+            end
+            
+            if isempty(obj);
+                flag=0;
+            else
+                flag=1;
+            end
+            
+        end
+        
+    end
+    
+end
+
