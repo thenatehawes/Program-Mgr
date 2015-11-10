@@ -74,13 +74,37 @@ classdef obj_db<handle
             
         end
         
+        function attachobject(dbobj,obj)
+        % attachobject function
+        %
+        % Inputs:
+        % dbobj - 1x1 object database - database to attach object to
+        % obj - 1x1 object handle - object to add to object database
+        %
+        % Example:
+        % attachobject(database,object);
+        %
+        % This example will add the object to the database
+        
+        dbobj.list=[dbobj.list,obj];
+        obj.id=dbobj.nextid;
+        
+        dbobj.activeids=[dbobj.activeids,dbobj.nextid];
+        dbobj.nextid=dbobj.nextid+1;
+        
+            
+        end
+        
+        function removeobject(db_obj,obj)
+            
+        end
+            
+          
     end
     
     methods(Abstract)
         
         addobject
-        attachobject
-        removeobject
         
     end
     

@@ -1,33 +1,40 @@
-classdef (Abstract) obj_db<handle
+classdef obj_db<handle
     %OBJ_DB Summary of this class goes here
     %   Detailed explanation goes here
     
-    properties
+    properties(Abstract)
         name
         info
-        objs
+        list
+    end
+    
+    properties(Abstract,Hidden)
+        
+        activeids
+        nextid
+        
     end
     
     methods
         
-        function obj=obj_db(name,info,objs)
-            
-            if nargin<3
-                objs=[];
-            end
-            
-            obj.name=name;
-            obj.info=info;
-            
-            for i=1:length(objs)
-                obj.objs=objs(i);
-                objs(i).id=i;
-            end
-            
-        end
+%         function obj=obj_db(name,info,objs)
+%             
+%             if nargin<3
+%                 objs=[];
+%             end
+%             
+%             obj.name=name;
+%             obj.info=info;
+%             
+%             for i=1:length(objs)
+%                 objs(i).id=i;
+%                 obj.list=objs(i);
+%             end
+%             
+%         end
         
         function [flag,obj]=query_db(dbobj,fh,fields)
-        % query_obj function
+        % query_db function
         %
         % Inputs:
         % dbobj - 1x1 object database - database to query
@@ -35,8 +42,13 @@ classdef (Abstract) obj_db<handle
         % fields - nx1 cell array - fields to check each query against
         %
         % Example:
-        % [flag,objects]=query_obj(database,@(x1,x2,x3)
-        % (strcmp(x1,'hi')&&strcmp(x2,
+        % [flag,objects]=query_db(database,@(x1,x2,x3)
+        % (strcmp(x1,'bob')&&strcmp(x2,'smith'))||x3==5,{'firstname','lastn
+        % ame','id'});
+        %
+        % This example will return any objects that are named bob smith or
+        % have an id # of 5.
+        
             obj=[];
             
             j=1;
@@ -61,6 +73,31 @@ classdef (Abstract) obj_db<handle
             end
             
         end
+        
+        function attachobject(dbobj,obj)
+        % attachobject function
+        %
+        % Inputs:
+        % dbobj - 1x1 object database - database to attach object to
+        % obj - 1x1 object handle - object to add to object database
+        %
+        % Example:
+        % attachobject(database,object);
+        %
+        % This example will add 
+            
+        end
+        
+        function removeobject(db_obj,obj)
+            
+        end
+            
+          
+    end
+    
+    methods(Abstract)
+        
+        addobject
         
     end
     
