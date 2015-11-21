@@ -7,6 +7,7 @@
 % obj_db
 
 clear all; close all; clc;
+addpath('functions\');
 
 % make a few resources
 r1=resource('Di',5170,'lp');
