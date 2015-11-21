@@ -1,18 +1,30 @@
 classdef obj_db<handle
-    %OBJ_DB Summary of this class goes here
-    %   Detailed explanation goes here
-    % objects assumed to have an id field and a loc field
+    % OBJ_DB Class
+    % N.B. Hawes
+    %
+    % This abstract class has been written to be a superclass for several
+    % different classes which are or have object databases. This abstract
+    % class provides a query method, methods to add and remove objects,
+    % methods to track what objects are in the database, and a display
+    % method to view certain fields of objects in the database. The only
+    % abstract method is the "addobject" method which each object database
+    % which inherit this superclass should define as the means to directly
+    % create an object and add it to the database.
+    %
+    % objects that are stored in this database are assumed to have an id
+    % field and a loc field. This limitation may be removed in a later
+    % version.
     
-    properties(Abstract)
-        name
-        info
-        list
+    properties(Abstract,SetAccess=public)
+        name % Name of the object database
+        info % Info associated with object database
+        list % This is the actual list of objects (where the info is stored)
     end
     
     properties(Abstract,Hidden)
         
-        activeids
-        nextid
+        activeids % A 1xn list of doubles which are the ids of the objects in the list
+        nextid % The next id which is to be assigned.
         
     end
     
@@ -82,29 +94,42 @@ classdef obj_db<handle
         dbobj.activeids=[dbobj.activeids,dbobj.nextid];
         dbobj.nextid=dbobj.nextid+1;
         
-            
         end
         
-        function removeobject(dbobj,obj)
+        function removeobject(dbobj,obj,varargin)
         % removeobject function
         %
         % Inputs:
         % dbobj - 1x1 object database - database to remove object from
         % obj - 1x1 object handle - object to remove from object database
         %
+        % Varargin:
+        % 'delete' - will delete the object to be removed
+        %
         % Example:
         % attachobject(database,object);
         %
         % This example will remove an object to the database
         
-        ind=find(obj.id==dbobj.activeids,1,'first'); % find the matching activeid
-        dbobj.activeids(ind)=[]; % remove the active id from the dbobj
-        
-        dbobj.list(obj.loc)=[]; % remove the object from the dbobj list
-        
-        obj.loc=[]; % remove the location & id from the object
-        obj.id=[];
-            
+            save=1;
+            for i=1:length(varargin)
+                if strcmp(varargin{i},'delete')
+                    save=0;
+                end
+            end
+
+            ind=find(obj.id==dbobj.activeids,1,'first'); % find the matching activeid
+            dbobj.activeids(ind)=[]; % remove the active id from the dbobj
+
+            dbobj.list(obj.loc)=[]; % remove the object from the dbobj list
+
+            if ~save
+                delete(dbobj.list(obj.loc)); % destroy object
+            else
+                obj.loc=[]; % remove the location & id from the object
+                obj.id=[];
+            end
+               
         end
         
         % Overrides

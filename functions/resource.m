@@ -1,24 +1,38 @@
 classdef resource < handle
-    %RESOURCE Summary of this class goes here
-    %   Detailed explanation goes here
+    % resource Class
+    % N.B. Hawes
+    %
+    % This class contains the info for specific objects. They are meant to
+    % be stored and used in a object database (resource_db)
     
     properties (SetAccess=private)
-       name
-       lab
-       band
+       name % 1xn char - resource name
+       lab % 1x1 double - lab number
+       band % 1xn char - band name ('t','lp','sp','eb') are possibilities
        cost % cost per week
        alr % applied labor rate
     end
     
-%    properties (Hidden,Access={?resource_db this should work but doesnt?
+%    properties (Hidden,Access={?resource_db}) % this should work but doesnt?
     properties (Hidden)
-        id
-        loc
+        id % 1x1 double - resource id#
+        loc % 1x1 double - resource location in resource_db
     end
     
     methods
         
         function obj=resource(name,lab,band)
+        % resource constructor
+        %
+        % Inputs:
+        % rname - 1xn char - resource name
+        % rlab - 1x1 double - resource lab #
+        % rband - 1xn char - resource band
+        %
+        % Example:
+        % resource('asdf',5170,'lp');
+        %
+        % This example will create a resource object
         
            obj.name=name;
            obj.lab=lab;
@@ -53,7 +67,7 @@ classdef resource < handle
             
         end
         
-        % Overrrides
+        % Overrides
         function out=isequal(obja,objb)
         % isequal function
         %

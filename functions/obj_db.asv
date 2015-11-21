@@ -1,6 +1,12 @@
 classdef obj_db<handle
-    %OBJ_DB Summary of this class goes here
-    %   Detailed explanation goes here
+    % OBJ_DB Class
+    % N.B. Hawes
+    %
+    % This abstract class has been written to be a superclass for several
+    % different classes which utilize 
+    
+    
+    
     % objects assumed to have an id field and a loc field
     
     properties(Abstract)
@@ -69,8 +75,11 @@ classdef obj_db<handle
         %
         % This example will add the object to the database
         
-        for i=1:length
-        if query_db
+        for i=1:length(dbobj.list)
+            if isequal(dbobj.list(i),obj)
+                error('This object is already in the database')
+            end
+        end
         
         dbobj.list=[dbobj.list,obj];
         obj.id=dbobj.nextid;
@@ -79,29 +88,42 @@ classdef obj_db<handle
         dbobj.activeids=[dbobj.activeids,dbobj.nextid];
         dbobj.nextid=dbobj.nextid+1;
         
-            
         end
         
-        function removeobject(dbobj,obj)
+        function removeobject(dbobj,obj,varargin)
         % removeobject function
         %
         % Inputs:
         % dbobj - 1x1 object database - database to remove object from
         % obj - 1x1 object handle - object to remove from object database
         %
+        % Varargin:
+        % 'delete' - will delete the object to be removed
+        %
         % Example:
         % attachobject(database,object);
         %
         % This example will remove an object to the database
         
-        ind=find(obj.id==dbobj.activeids,1,'first'); % find the matching activeid
-        dbobj.activeids(ind)=[]; % remove the active id from the dbobj
-        
-        dbobj.list(obj.loc)=[]; % remove the object from the dbobj list
-        
-        obj.loc=[]; % remove the location & id from the object
-        obj.id=[];
-            
+            save=1;
+            for i=1:length(varargin)
+                if strcmp(varargin{i},'delete')
+                    save=0;
+                end
+            end
+
+            ind=find(obj.id==dbobj.activeids,1,'first'); % find the matching activeid
+            dbobj.activeids(ind)=[]; % remove the active id from the dbobj
+
+            dbobj.list(obj.loc)=[]; % remove the object from the dbobj list
+
+            if ~save
+                delete(dbobj.list(obj.loc)); % destroy object
+            else
+                obj.loc=[]; % remove the location & id from the object
+                obj.id=[];
+            end
+               
         end
         
         % Overrides
