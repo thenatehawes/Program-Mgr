@@ -18,22 +18,6 @@ classdef obj_db<handle
     
     methods
         
-%         function obj=obj_db(name,info,objs)
-%             
-%             if nargin<3
-%                 objs=[];
-%             end
-%             
-%             obj.name=name;
-%             obj.info=info;
-%             
-%             for i=1:length(objs)
-%                 objs(i).id=i;
-%                 obj.list=objs(i);
-%             end
-%             
-%         end
-        
         function [flag,obj]=query_db(dbobj,fh,fields)
         % query_db function
         %
@@ -85,6 +69,12 @@ classdef obj_db<handle
         %
         % This example will add the object to the database
         
+        for i=1:length(dbobj.list)
+            if isequal(dbobj.list(i),obj)
+                error('This object is already in the database')
+            end
+        end
+        
         dbobj.list=[dbobj.list,obj];
         obj.id=dbobj.nextid;
         obj.loc=length(dbobj.list);
@@ -115,6 +105,61 @@ classdef obj_db<handle
         obj.loc=[]; % remove the location & id from the object
         obj.id=[];
             
+        end
+        
+        % Overrides
+        function disp(dbobj,varargin)
+        % disp function
+        %
+        % Inputs:
+        % dbobj - 1x1 object database - database to display object from
+        % field - 1x1 char - optional, char name
+        %
+        % Example:
+        % disp(database);
+        %
+        % This example will display the active ids and # of object in db
+        %
+        % Example:
+        % disp(database,'name');
+        %
+        % This example will display the "name" field of each object in the
+        % database
+           
+           if  isempty(varargin)
+
+               disp('%%%%%%%%%%%%%%%%%%%%%%')
+               disp('# of objects in db')
+               disp(num2str(length(dbobj.list)))   
+               disp('Active IDs:')
+               disp(num2str(dbobj.activeids))
+               disp('%%%%%%%%%%%%%%%%%%%%%%')
+               
+           else
+               
+               field=varargin{1};
+               disp('%%%%%%%%%%%%%%%%%%%%%%')
+               disp(['Displaying List of ' field 's' ])
+               for i=1:length(dbobj.list)
+                   
+                   switch class(dbobj.list(i).(field))
+                   
+                       case 'char'
+                           disp(dbobj.list(i).(field));
+                           
+                       case 'double'
+                           disp(num2str(dbobj.list(i).(field)));
+                           
+                       otherwise
+                           error('Display only setup for char or double fields')
+                           
+                   end
+           
+               end
+               disp('%%%%%%%%%%%%%%%%%%%%%%')
+                
+           end
+           
         end
             
           

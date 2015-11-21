@@ -30,3 +30,20 @@ addobject(rdb,'Nate',5170,'lp');
 % query the rdb for all LPs in 5170
 [flag,queryresults1]=query_db(rdb,@(x,y)(strcmp(x,'lp')&&(y==5170)),{'band','lab'});
 
+% display stats on db & list of names
+disp(rdb)
+disp(rdb,'name')
+
+% try to add 2 of the same object
+
+try
+    addobject(rdb,'Nate',5170,'lp');
+catch err
+    disp(['Error: ' err.message]);
+end
+
+% remove object Joey by removing everyone in his lab
+[flag,queryresults2]=query_db(rdb,@(x)(x==9999),{'lab'});
+removeobject(rdb,queryresults2);
+disp(rdb)
+disp(rdb,'name')

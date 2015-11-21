@@ -7,11 +7,11 @@ classdef resource < handle
        lab
        band
        cost % cost per week
-       alr
+       alr % applied labor rate
     end
     
 %    properties (Hidden,Access={?resource_db this should work but doesnt?
-    properties (Hidden,SetAccess=private)
+    properties (Hidden)
         id
         loc
     end
@@ -38,16 +38,33 @@ classdef resource < handle
                case 'sp'
 
                    obj.cost=9930;
-                   obj.alr=0.8;
+                   obj.alr=0.78;
                    
                case 'eb'
                    
-                   obj.cost=4600;
-                   obj.alr=0.8;                   
+                   obj.cost=12000;
+                   obj.alr=0.78;    
+                   
+               otherwise
+                   
+                   error('Unknown Band');
                
            end
             
         end
+        
+        % Overrrides
+        function out=isequal(obja,objb)
+            % function is
+            
+           if strcmp(obja.name,objb.name)&&(obja.lab==objb.lab)&&strcmp(obja.band,objb.band)
+               out=1;
+           else
+               out=0;
+           end
+            
+        end
+        
         
     end
     
