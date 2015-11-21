@@ -10,7 +10,7 @@ classdef resource_db<obj_db
     
     properties(Hidden)
        
-        activeids={};
+        activeids=[];
         nextid=1;
         
     end
@@ -34,23 +34,11 @@ classdef resource_db<obj_db
         
         function addobject(dbobj,rname,rlab,rband)
             
-            
-            
-        end
-        
-        function attachobject(dbobj,robj)        
-        
-            robj.id=dbobj.nextid;
-            dbobj.activeids=[dbobj.activateids,robj.id];
-            dbobj.nextid=dbobj.nextid+1;
+            obj=resource(rname,rlab,rband);
+            attachobject(dbobj,obj);
             
         end
         
-        function removeobject(dbobj,robj)
-            
-            
-            
-        end
     end
     
 end

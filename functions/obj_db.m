@@ -1,6 +1,7 @@
 classdef obj_db<handle
     %OBJ_DB Summary of this class goes here
     %   Detailed explanation goes here
+    % objects assumed to have an id field and a loc field
     
     properties(Abstract)
         name
@@ -51,17 +52,15 @@ classdef obj_db<handle
         
             obj=[];
             
-            j=1;
-            for i=1:length(dbobj.objs)
+            for i=1:length(dbobj.list)
                 % this is pretty ugly- probably want to change it later
-                x=cell(length(fields,1)); % pre-alloc
+                x=cell(length(fields),1); % pre-alloc
                 for k=1:length(fields)
-                    x{k}=dbobj.objs(j).(fields{k});
+                    x{k}=dbobj.list(i).(fields{k});
                 end
                
                 if fh(x{:})
-                    obj(j)=dbojb.objs(j);
-                    j=j+1;
+                    obj=[obj,dbobj.list(i)];
                 end
                 
             end
@@ -88,6 +87,7 @@ classdef obj_db<handle
         
         dbobj.list=[dbobj.list,obj];
         obj.id=dbobj.nextid;
+        obj.loc=length(dbobj.list);
         
         dbobj.activeids=[dbobj.activeids,dbobj.nextid];
         dbobj.nextid=dbobj.nextid+1;
@@ -95,7 +95,25 @@ classdef obj_db<handle
             
         end
         
-        function removeobject(db_obj,obj)
+        function removeobject(dbobj,obj)
+        % removeobject function
+        %
+        % Inputs:
+        % dbobj - 1x1 object database - database to remove object from
+        % obj - 1x1 object handle - object to remove from object database
+        %
+        % Example:
+        % attachobject(database,object);
+        %
+        % This example will remove an object to the database
+        
+        ind=find(obj.id==dbobj.activeids,1,'first'); % find the matching activeid
+        dbobj.activeids(ind)=[]; % remove the active id from the dbobj
+        
+        dbobj.list(obj.loc)=[]; % remove the object from the dbobj list
+        
+        obj.loc=[]; % remove the location & id from the object
+        obj.id=[];
             
         end
             
