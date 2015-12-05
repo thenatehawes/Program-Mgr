@@ -1,0 +1,13 @@
+% tasklinetest.m
+%
+% N.B. Hawes
+% 12/05/2015
+%
+% This m file tests the following classes: taskline
+
+clear all; close all; clc;
+addpath('functions\');
+load('resources0,1.mat');
+
+tl1=taskline(rdb.list(5),5);
+tl2=taskline(rdb.list(3),82,'hr');
