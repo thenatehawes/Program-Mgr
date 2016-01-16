@@ -1,15 +1,18 @@
-classdef program < obj_db
+classdef program<tree
     %PROGRAM Summary of this class goes here
     %   Detailed explanation goes here
     
-    properties
+    properties (SetAccess=public)        
+        name % Name of the object database
+        info % Info associated with object database
+        children % These are the children of this program
         cost
         time
     end
     
     methods
         
-        function obj=program(name,info,objs)
+        function obj=program(name,info,tasks)
             % program constructor method
             %
             % Inputs:
@@ -17,27 +20,34 @@ classdef program < obj_db
             % info - 1xn char - some additional info
             %
             % Optional Inputs:
-            % objs - 1xn resource - resource objects to populate into the database
+            % tasks - 1xn task - task objects to populate into the tree
             %
             % Example:
-            %
-            % r(1)=resource('asdf',5170,'lp');
-            % r(2)=resource('qwer',8093,'sp');
-            % res_db=resource_db('myDatabase','someinfo',r);
-            %
-            % This code will make 2 resources, then build a resource
-            % database with both resources attached.
+            
             
             if nargin<3 % if less than 3 
-                objs=[];
+                tasks=[];
             end
             
             obj.name=name;
             obj.info=info;
             
-            for i=1:length(objs)
-                attachobject(obj,objs(i));
+            for i=1:length(tasks)
+                attachchild(obj,tasks(i));
             end
+            
+        end
+        
+        function attachchild(progobj,childobj)
+            
+            progobj.children=[progobj.children childobj];
+            
+        end
+        
+        function addchild(a)
+            
+            b=1;
+            disp(a);
             
         end
         
