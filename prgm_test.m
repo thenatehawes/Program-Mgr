@@ -1,4 +1,4 @@
-% tasklinetest.m
+% prgm_test.m
 %
 % N.B. Hawes
 % 12/05/2015
@@ -13,9 +13,9 @@ task1=task('firstTask','');
 task2=task('secondTask','');
 subtask1_1=task('firstSubTask','');
 
-attachobject(task1,subtask1_1); % This attaches a subtask to task 1
-attachobject(prgm,task1); % This attaches task 1 to the program
-attachobject(prgm,task2); % This attaches task 2 to the program
+attachchild(task1,subtask1_1); % This attaches a subtask to task 1
+attachchild(prgm,task1); % This attaches task 1 to the program
+attachchild(prgm,task2); % This attaches task 2 to the program
 
-disp(prgm,'name')
+disp(prgm)
 

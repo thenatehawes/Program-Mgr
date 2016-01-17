@@ -12,17 +12,63 @@ classdef tree < handle
     
     methods
         
-        function attachchild(progobj,childobj)
+        function attachchild(parentobj,childobj)
             
-            progobj.children=[progobj.children childobj];
+            if strcmp(class(childobj),'program')
+                error('Cannot attach a program object to anything')
+            end
+            
+            parentobj.children=[parentobj.children childobj];
             
         end
         
-        function addchild(treeobj,name,info)
+        function addchild(parentobj,name,info)
             
             obj=task(name,info);
-            attachchild(treeobj,obj);
+            attachchild(parentobj,obj);
             
+        end
+        
+        function removechild(parentobj,childobj)
+            
+            cont=1;
+            if ~isempty(childobj.children)
+                cont=input('Child object is not empty, do you want to continue? (1-yes, 0-no)');
+            end
+            
+            if cont
+                parentobj.children(parentobj.children==childobj)=[];
+                delete(childobj)
+            end
+            
+        end
+        
+        function out=update(treeobj)
+           
+            if isempty(treeobj.children)
+                
+                out=[treeobj.cost,treeobj.time];
+                
+            else
+            
+                out=[0,0];
+
+                for i=1:length(treeobj.children)
+                    
+                    outtmp=update(treeobj.children(i));
+                    out=out+outtmp;
+
+                end
+        
+            end
+        end
+        
+        % Overrides
+        
+        function disp(obj)
+           
+            disp(['Object ' obj.name ' is a ' class(obj)])
+            disp(['Object ' obj.name ' has children ' ])
         end
         
     end
