@@ -16,16 +16,18 @@ classdef tree < handle
             
             if strcmp(class(childobj),'program')
                 error('Cannot attach a program object to anything')
+            elseif any(parentobj.children==childobj)
+                error('That child is already attached to this task')
             end
             
             parentobj.children=[parentobj.children childobj];
+            childobj.parent=parentobj;
             
         end
         
-        function addchild(parentobj,name,info)
+        function obj=addchild(parentobj,name,info,children)
             
-            obj=task(name,info);
-            attachchild(parentobj,obj);
+            obj=task(name,info,parentobj,children);
             
         end
         
@@ -47,6 +49,14 @@ classdef tree < handle
            
             if isempty(treeobj.children)
                 
+                if isempty(treeobj.cost)
+                    treeobj.cost=0;
+                end
+                
+                if isempty(treeobj.time)
+                    treeobj.time=0;
+                end
+                
                 out=[treeobj.cost,treeobj.time];
                 
             else
@@ -59,8 +69,36 @@ classdef tree < handle
                     out=out+outtmp;
 
                 end
+                
+                treeobj.cost=out(1);
+                treeobj.time=out(2);
         
             end
+        end
+        
+        function out=findleaves(treeobj,varargin)
+            
+            if ~isempty(varargin)
+                verbose=1;
+            else
+                verbose=0;
+            end
+            
+            if isempty(treeobj.children)
+                out=treeobj;
+                if verbose
+                    disp(['I am ' treeobj.name ' and I am a leaf'])
+                end
+            else
+                out=[];
+                
+                for i=1:length(treeobj.children)
+                    outtmp=findleaves(treeobj.children(i),varargin);
+                    out=[out outtmp];
+                end
+                
+            end
+            
         end
         
         % Overrides

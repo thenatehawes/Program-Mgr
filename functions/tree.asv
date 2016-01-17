@@ -16,16 +16,18 @@ classdef tree < handle
             
             if strcmp(class(childobj),'program')
                 error('Cannot attach a program object to anything')
+            elseif any(parentobj.children==childobj)
+                error('That child is already attached to this task')
             end
             
             parentobj.children=[parentobj.children childobj];
+            childobj.parent=parentobj;
             
         end
         
-        function addchild(parentobj,name,info)
+        function obj=addchild(parentobj,name,info,children)
             
-            obj=task(name,info);
-            attachchild(parentobj,obj);
+            obj=task(name,info,parentobj,children);
             
         end
         
@@ -47,6 +49,14 @@ classdef tree < handle
            
             if isempty(treeobj.children)
                 
+                if isempty(treeobj.cost)
+                    treeobj.cost=0;
+                end
+                
+                if isempty(treeobj.time)
+                    treeobj.time=0;
+                end
+                
                 out=[treeobj.cost,treeobj.time];
                 
             else
@@ -59,16 +69,35 @@ classdef tree < handle
                     out=out+outtmp;
 
                 end
+                
+                treeobj.cost=out(1);
+                treeobj.time=out(2);
         
             end
+        end
+        
+        function out=findleaves(treeobj)
+            
         end
         
         % Overrides
         
         function disp(obj)
-           
-            disp(['Object ' obj.name ' is a ' class(obj)])
-            disp(['Object ' obj.name ' has children ' ])
+            
+            if isempty(obj.children)
+            disp(['Object ' obj.name ' has no children '])    
+            else
+            disp(['Object ' obj.name ' has children '])
+            for i=1:length(obj.children)
+                disp(obj.children(i).name)
+            end
+            
+            for i=1:length(obj.children)
+               disp(obj.children(i)) 
+            end
+            
+            end
+            
         end
         
     end

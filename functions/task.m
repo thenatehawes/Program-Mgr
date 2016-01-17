@@ -26,7 +26,8 @@ classdef task<tree
            
             
             if nargin<3 % if less than 3 
-                objs=[];
+                tasks=[];
+                parent=[];
             end
             
             obj.name=name;
@@ -36,7 +37,9 @@ classdef task<tree
                 attachchild(obj,tasks(i));
             end
             
-            attachobject(parent,child)
+            if ~isempty(parent)
+                attachchild(parent,obj)
+            end
             
         end
         
