@@ -5,10 +5,15 @@ classdef task<tree
     properties (SetAccess=public)        
         name % Name of the object database
         info % Info associated with object database
+        id % Tree id
         parent
         children % This is the actual list of objects (where the info is stored)
         cost
         time
+    end
+    
+    properties (Hidden)
+        level
     end
     
     methods
@@ -32,6 +37,7 @@ classdef task<tree
             
             obj.name=name;
             obj.info=info;
+            obj.id=[];
             
             for i=1:length(tasks)
                 attachchild(obj,tasks(i));
@@ -46,7 +52,7 @@ classdef task<tree
         function promote(childobj)
             
             % Check if childobj has a parent or grandparent
-            if ~isempty(childobj.parent)
+            if isempty(childobj.parent)
                 error('This object has no parents!')
             elseif strcmp(class(childobj.parent),'program')
                 error('The parent object is of class program (and hence this object has no grandparent)')
@@ -59,7 +65,7 @@ classdef task<tree
             % Remove the childobj from the parentobj's list of children
             parentobj.children(parentobj.children==childobj)=[];
             % Add the childobj to the grandparentobj's list of children
-            grandparent.children=[grandparent.children taskobj];
+            grandparentobj.children=[grandparentobj.children childobj];
             
         end
         

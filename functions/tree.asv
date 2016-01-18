@@ -5,9 +5,14 @@ classdef tree < handle
     properties (SetAccess=public,Abstract)        
         name % Name of the object database
         info % Info associated with object database
+        id % tree id
         children % These are the children of this program
         cost
         time
+    end
+    
+    properties(Hidden,Abstract)
+        level
     end
     
     methods
@@ -45,7 +50,57 @@ classdef tree < handle
             
         end
         
-        function out=update(treeobj)
+        function update(treeobj)
+            
+            updateid(treeobj);
+            updatelvl(treeobj);
+            updatecost(treeobj);
+            
+        end
+        
+        function updatelvl(treeobj)
+           
+           if strcmp(class(treeobj),'program')
+               treeobj.level=1;
+           else
+               
+               parentobj=treeobj.parent;
+               
+               if isempty(parentobj.level)
+                   parentobj.level=0;
+               end
+               
+               treeobj.level=parentobj.level+1;
+               
+               for i=1:length(treeobj.children)
+                   updatelvl(treeobj.children(i))
+               end
+           
+           end
+            
+        end
+        
+        function updateid(treeobj,ind)
+            
+            if nargin==1,
+                ind=1;
+            end
+            
+            if strcmp(class(treeobj),'program')
+                treeobj.id='1.';
+            else
+                parentobj=treeobj.parent;
+                treeobj.id=[parentobj.id num2str(ind) '.'];
+            end
+            
+            for i=1:length(treeobj.children)
+                updateid(treeobj.children(i),i);
+            end
+                
+            
+        end
+        
+        function out=updatecost(treeobj)
            
             if isempty(treeobj.children)
                 
@@ -65,7 +120,7 @@ classdef tree < handle
 
                 for i=1:length(treeobj.children)
                     
-                    outtmp=update(treeobj.children(i));
+                    outtmp=updatecost(treeobj.children(i));
                     out=out+outtmp;
 
                 end
@@ -76,7 +131,34 @@ classdef tree < handle
             end
         end
         
-        function out=findleaves(treeobj)
+        function out=findleaves(treeobj,varargin)
+            
+            if ~isempty(varargin)
+                verbose=1;
+            else
+                verbose=0;
+            end
+            
+            if isempty(treeobj.children)
+                out=treeobj;
+                if verbose
+                    disp(['I am ' treeobj.name ' and I am a leaf'])
+                end
+            else
+                out=[];
+                
+                for i=1:length(treeobj.children)
+                    outtmp=findleaves(treeobj.children(i),varargin);
+                    out=[out outtmp];
+                end
+                
+            end
+            
+        end
+        
+        function out=findchild(info)
+            
+            out=info;
             
         end
         
@@ -84,18 +166,22 @@ classdef tree < handle
         
         function disp(obj)
             
-            if isempty(obj.children)
-            disp(['Object ' obj.name ' has no children '])    
+            if isempty(obj.level)
+                lvl=0;
             else
-            disp(['Object ' obj.name ' has children '])
-            for i=1:length(obj.children)
-                disp(obj.children(i).name)
+                lvl=obj.level-1;
             end
             
-            for i=1:length(obj.children)
-               disp(obj.children(i)) 
-            end
+        
             
+            disp([obj.id ' ' obj.name])
+            
+            if ~isempty(obj.children)
+
+                for i=1:length(obj.children)
+                   disp(obj.children(i)) 
+                end
+
             end
             
         end

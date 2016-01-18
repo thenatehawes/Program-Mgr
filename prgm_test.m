@@ -35,10 +35,9 @@ task3=addchild(prgm,'thirdTask','',subtask3_1); % Add task3 directly to prgm and
 attachchild(prgm,task1); % This attaches task 1 to the program
 attachchild(prgm,task2); % This attaches task 2 to the program
 
-% Display the tree
-disp(prgm)
-
 % Make a 2nd program and try to attach it to prgm, this should fail
+disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
+disp('% Checking double attachment')
 prgm2=program('myProgram2','this is the second one');
 good=0;
 try
@@ -47,16 +46,28 @@ catch err
    good=strcmp(err.message,'Cannot attach a program object to anything');
 end
 
-disp('%%%%%%%%%%%%%%%%%%%%%%%%%%')
 if good
-    disp('Attach operation properly errored')
+    disp('% ...Passed')
 else
-    disp('Attach operation did not properly error')
+    disp('% ...Failed')
 end
+disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
+disp(' ')
+disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
+disp('% Checking leaf find')
 
 % Find the leaf tasks
-leaves=findleaves(prgm,'verbose');
+leaves=findleaves(prgm);
 
+if all(leaves==[subtask3_1,subtask1_1,subtask1_2_1,subtask1_2_2,subtask1_3_1,task2])
+    disp('% ...Passed')
+else
+    disp('% ...Failed')
+end
+disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
+disp(' ')
+disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
+disp('% Checking update function')
 % Check if the update function works properly by adding cost & time to the
 % leaf tasks and then running update on prgm
 
@@ -68,10 +79,23 @@ for i=1:length(leaves)
     leaves(i).time=rand2(i);
 end
     
-chk=update(prgm);
+update(prgm);
+
+chk=[prgm.cost,prgm.time];
 
 if chk(1)==sum(rand1)&&chk(2)==sum(rand2)
-    disp('Update function works properly')
+    disp('%...Passed')
 else
-    disp('Update function does not work properly')
+    disp('...Failed')
 end
+disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
+disp(' ')
+disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
+disp('% Checking disp, promote, and move functions')
+disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
+
+% Display the tree
+disp(prgm)
+promote(subtask1_2_1)
+move(subtask1_2,prgm)
+disp(prgm)

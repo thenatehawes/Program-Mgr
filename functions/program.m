@@ -5,9 +5,14 @@ classdef program<tree
     properties (SetAccess=public)        
         name % Name of the object database
         info % Info associated with object database
+        id % Tree id
         children % These are the children of this program
         cost
         time
+    end
+    
+    properties (Hidden)
+        level
     end
     
     methods
@@ -31,6 +36,7 @@ classdef program<tree
             
             obj.name=name;
             obj.info=info;
+            obj.id=[];
             
             for i=1:length(tasks)
                 attachchild(obj,tasks(i));
