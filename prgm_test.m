@@ -1,7 +1,7 @@
 % prgm_test.m
 %
 % N.B. Hawes
-% 1/07/2015
+% 1/07/2016
 %
 % This m file tests the following classes: task, program, tree
 clear all; close all; clc;
@@ -11,15 +11,15 @@ addpath('functions\');
 prgm=program('myProgram','this is the first one');
 
 % Make some tasks & subtasks
-task1=task('firstTask','');
-task2=task('secondTask','');
-subtask1_1=task('firstSubTask','');
-subtask1_2=task('secondSubTask','');
-subtask1_3=task('thirdSubTask','');
-subtask1_2_1=task('firstSubSubTask','');
-subtask1_2_2=task('secondSubSubTask','');
-subtask1_3_1=task('thirdSubSubTask','');
-subtask3_1=task('fourthSubTask','');
+task1=task('Task1','');
+task2=task('Task2','');
+subtask1_1=task('SubTask1,1','');
+subtask1_2=task('SubTask1,2','');
+subtask1_3=task('SubTask1,3','');
+subtask1_2_1=task('SubTask1,2,1','');
+subtask1_2_2=task('SubTask1,2,2','');
+subtask1_3_1=task('SubTask1,3,1','');
+subtask3_1=task('SubTask3,1','');
 % Attach tasks & subtasks
 attachchild(task1,subtask1_1); % This attaches a subtask to task 1
 
@@ -30,10 +30,11 @@ attachchild(task1,subtask1_2);
 attachchild(subtask1_3,subtask1_3_1);
 attachchild(task1,subtask1_3);
 
-task3=addchild(prgm,'thirdTask','',subtask3_1); % Add task3 directly to prgm and have subtask3_1 added under task3 
 
 attachchild(prgm,task1); % This attaches task 1 to the program
 attachchild(prgm,task2); % This attaches task 2 to the program
+
+task3=addchild(prgm,'Task3','',subtask3_1); % Add task3 directly to prgm and have subtask3_1 added under task3 
 
 % Make a 2nd program and try to attach it to prgm, this should fail
 disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
@@ -59,7 +60,7 @@ disp('% Checking leaf find')
 % Find the leaf tasks
 leaves=findleaves(prgm);
 
-if all(leaves==[subtask3_1,subtask1_1,subtask1_2_1,subtask1_2_2,subtask1_3_1,task2])
+if all(ismember(leaves,[subtask3_1,subtask1_1,subtask1_2_1,subtask1_2_2,subtask1_3_1,task2]))
     disp('% ...Passed')
 else
     disp('% ...Failed')
@@ -90,12 +91,26 @@ else
 end
 disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
 disp(' ')
-disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
-disp('% Checking disp, promote, and move functions')
-disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
 
-% Display the tree
-disp(prgm)
 promote(subtask1_2_1)
 move(subtask1_2,prgm)
+update(prgm)
 disp(prgm)
+
+% Make sure subtask1_2_1 was promoted (and the it was removed from subtask1_2)
+% Make sure subtask1_2 was moved under prgm (and that it was removed from task1
+a(1)=ismember(subtask1_2_1,task1.children);
+a(2)=~ismember(subtask1_2_1,subtask1_2.children);
+a(3)=ismember(subtask1_2,prgm.children);
+a(4)=~ismember(subtask1_2,task1.children);
+
+disp(' ')
+disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
+disp('% Checking disp, promote, and move functions')
+if all(a)
+    disp('% ...Passed')
+else
+    disp('% ...Failed')
+end
+disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
+disp(' ')
