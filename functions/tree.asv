@@ -36,20 +36,6 @@ classdef tree < handle
             
         end
         
-        function removechild(parentobj,childobj)
-            
-            cont=1;
-            if ~isempty(childobj.children)
-                cont=input('Child object is not empty, do you want to continue? (1-yes, 0-no)');
-            end
-            
-            if cont
-                parentobj.children(parentobj.children==childobj)=[];
-                delete(childobj)
-            end
-            
-        end
-        
         function update(treeobj)
             
             updateid(treeobj);
@@ -72,14 +58,14 @@ classdef tree < handle
                
                treeobj.level=parentobj.level+1;
                
-               for i=1:length(treeobj.children)
-                   updatelvl(treeobj.children(i))
-               end
+           end
            
+           for i=1:length(treeobj.children)
+               updatelvl(treeobj.children(i))
            end
             
         end
-        
+          
         function updateid(treeobj,ind)
             
             if nargin==1,
@@ -148,8 +134,14 @@ classdef tree < handle
                 out=[];
                 
                 for i=1:length(treeobj.children)
-                    outtmp=findleaves(treeobj.children(i),varargin);
-                    out=[out outtmp];
+                    
+                    if isempty(varargin)
+                        outtmp=findleaves(treeobj.children(i));
+                    else
+                        outtmp=findleaves(treeobj.children(i),varargin);
+                    end
+                        out=[out outtmp];
+                        
                 end
                 
             end
@@ -166,22 +158,46 @@ classdef tree < handle
         
         function disp(obj)
             
-            if isempty(obj.level)
+            for i=1:length(obj)
+            
+            if isempty(obj(i).level)
                 lvl=0;
             else
-                lvl=obj.level-1;
+                lvl=obj(i).level-1;
             end
             
-        
+            tmp=sprintf([repmat('\t',1,lvl) obj(i).id ' ' obj(i).name]);
+            disp(tmp);
             
-            disp([obj.id ' ' obj.name])
-            
-            if ~isempty(obj.children)
+            if ~isempty(obj(i).children)
 
-                for i=1:length(obj.children)
-                   disp(obj.children(i)) 
+                for j=1:length(obj(i).children)
+                   disp(obj(i).children(j)) 
                 end
 
+            end
+            
+            end
+            
+        end
+        
+        function out=ismember(objs1,objs2)
+            
+            out=zeros(1,length(objs1));
+            
+            for i=1:length(objs1)
+                
+                yes=0;
+                for j=1:length(objs2)
+                   
+                    if isequal(objs1(i),objs2(j))
+                        yes=1;
+                    end
+                    
+                end
+                
+                out(i)=yes;
+                
             end
             
         end

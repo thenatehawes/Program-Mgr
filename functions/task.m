@@ -49,6 +49,36 @@ classdef task<tree
             
         end
         
+        function removechild(childobj)
+            
+            cont=1;
+            if ~isempty(childobj.children)
+                cont=input('Child object is not empty, do you want to continue? (1-yes, 0-no)');
+            end
+            
+            if cont
+                parentobj=childobj.parent;
+                childobj.parent=[];
+                parentobj.children(parentobj.children==childobj)=[];
+                
+            end
+        end
+        
+        function destroychild(childobj)
+            
+            cont=1;
+            if ~isempty(childobj.children)
+                cont=input('Child object is not empty, do you want to continue? (1-yes, 0-no)');
+            end
+            
+            if cont
+                parentobj=childobj.parent;
+                parentobj.children(parentobj.children==childobj)=[];
+                delete(childobj)
+            end
+            
+        end
+        
         function promote(childobj)
             
             % Check if childobj has a parent or grandparent
@@ -63,9 +93,9 @@ classdef task<tree
             grandparentobj=parentobj.parent;
             
             % Remove the childobj from the parentobj's list of children
-            parentobj.children(parentobj.children==childobj)=[];
+            removechild(childobj);
             % Add the childobj to the grandparentobj's list of children
-            grandparentobj.children=[grandparentobj.children childobj];
+            attachchild(grandparentobj,childobj);
             
         end
         
