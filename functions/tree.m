@@ -1,6 +1,11 @@
 classdef tree < handle
-    %UNTITLED Summary of this class goes here
-    %   Detailed explanation goes here
+    % OBJ_DB Class
+    % N.B. Hawes
+    %
+    % This abstract class has been written to be a superclass for several
+    % different classes which utilize trees. This class provides many
+    % different methods which allow attaching or adding another tree object
+    % to this object, 
     
     properties (SetAccess=public,Abstract)        
         name % Name of the object database
