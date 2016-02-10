@@ -160,37 +160,6 @@ classdef tree < handle
             end
         end
         
-        function out=findleaves(treeobj,varargin)
-            
-            if ~isempty(varargin)
-                verbose=1;
-            else
-                verbose=0;
-            end
-            
-            if isempty(treeobj.children)
-                out=treeobj;
-                if verbose
-                    disp(['I am ' treeobj.name ' and I am a leaf'])
-                end
-            else
-                out=[];
-                
-                for i=1:length(treeobj.children)
-                    
-                    if isempty(varargin)
-                        outtmp=findleaves(treeobj.children(i));
-                    else
-                        outtmp=findleaves(treeobj.children(i),varargin);
-                    end
-                        out=[out outtmp];
-                        
-                end
-                
-            end
-            
-        end
-        
         function [flag,out]=findchild(treeobj,fh,fields)
         % findchild function
         %
@@ -204,8 +173,16 @@ classdef tree < handle
         % (x1==3&&x2>1000)||x3>50,{'level','cost','time'});
         %
         % This example will return any objects are on level 3 with a cost
-        % greater than 1000 or has a time greater than 50.
-        
+        % greater than 1000 or has a time greater than 50. Note that if any
+        % levels, cost, or time are empty vectors the above will error. If
+        % there's any chance that the tree fields may be empty then use the
+        % below version.
+        %
+        % [flag,objects]=findchild(treeobj,@(x1,x2,x3)
+        % (x1==3&x2>1000)|x3>50,{'level','cost','time'});
+        %
+        % The only difference is using & and | instead 
+            out=[];
             x=cell(length(fields),1); % pre-alloc
             for k=1:length(fields)
                 x{k}=treeobj.(fields{k});
@@ -217,8 +194,8 @@ classdef tree < handle
             end
             % Then run it recursively for all children too
             for i=1:length(treeobj.children)
-                outtmp=findchild(treeobj.children(i),fh,fields);
-                out=[out(2),outtmp];
+                [flagtmp,outtmp]=findchild(treeobj.children(i),fh,fields);
+                out=[out,outtmp];
             end
             
             if isempty(out)

@@ -73,8 +73,8 @@ subtask3_1.time=5;
 subtask1_2_1.cost=2000;
 subtask1_2_1.time=100;
 
-[flag,expensive_tree]=findchild(prgm,@(x1,x2) x1>10&x2>1000,{'time','cost'});
-foundexpensive=all(ismember(expensive_tree,[subtask1_1,subtask1_2_1]))&& ~any(ismember(expensive_tree,[subtask3_1]));
+[flag,expensive_tree]=findchild(prgm,@(x1,x2) x1>10&&x2>1000,{'time','cost'});
+foundexpensive=all(ismember(expensive_tree,[subtask1_1,subtask1_2_1]))&& ~any(ismember(expensive_tree,[subtask3_1])
 
 if foundleaves && foundtree && foundexpensive
     disp('% ...Passed')
