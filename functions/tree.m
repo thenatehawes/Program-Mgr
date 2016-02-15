@@ -7,6 +7,11 @@ classdef tree < handle
     % different methods which allow attaching or adding another tree object
     % to this tree, automatically labeling the level of tree objects under
     % this tree object, and find tree objects by property values.
+    %
+    % 2016-02-14 Note: In hindsight, there should probably be 2 abstract
+    % classes, "root" and "tree". Tree should be a subclass of root.
+    % Program would inherit from root and task from tree. I'm not going to
+    % implement this now, but I may at some point in the future.
     
     properties (SetAccess=public,Abstract)        
         name % Name of the object database

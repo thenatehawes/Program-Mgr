@@ -1,18 +1,22 @@
 classdef program<tree
-    %PROGRAM Summary of this class goes here
-    %   Detailed explanation goes here
+    % program Class
+    % N.B. Hawes
+    %
+    % This class has been written to make use of the tree class. This class
+    % is the implementation of a "root" of a tree. Programs cannot be be
+    % made children and they have no parent field.
     
     properties (SetAccess=public)        
         name % Name of the object database
         info % Info associated with object database
-        id % Tree id
+        id='1.' % Tree id, all programs have a default id of '1.'
         children % These are the children of this program
-        cost
-        time
+        cost % Total program cost
+        time % Total program time
     end
     
     properties (Hidden)
-        level
+        level=0; % All programs are by default level 0
     end
     
     methods
@@ -27,7 +31,9 @@ classdef program<tree
             % Optional Inputs:
             % tasks - 1xn task - task objects to populate into the tree
             %
-            % Example:
+            % Example: prgm=program('myProgram','Prog Info',childtasks);
+            % This will createa a program object and populate the
+            % childtasks as the program's children.
             
             
             if nargin<3 % if less than 3 

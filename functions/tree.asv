@@ -1,5 +1,5 @@
 classdef tree < handle
-    % OBJ_DB Class
+    % tree Class
     % N.B. Hawes
     %
     % This abstract class has been written to be a superclass for several
@@ -7,6 +7,9 @@ classdef tree < handle
     % different methods which allow attaching or adding another tree object
     % to this tree, automatically labeling the level of tree objects under
     % this tree object, and find tree objects by property values.
+    %
+    % 2016-02-14 Note: In hindsight, there should probably be 2 abstract
+    % classes, "root" and "tree". Tree should be a subclass of root, 
     
     properties (SetAccess=public,Abstract)        
         name % Name of the object database
@@ -181,7 +184,9 @@ classdef tree < handle
         % [flag,objects]=findchild(treeobj,@(x1,x2,x3)
         % (x1==3&x2>1000)|x3>50,{'level','cost','time'});
         %
-        % The only difference is using & and | instead 
+        % The only difference is using & and | instead of && and ||. Empty
+        % fields will effectively evaluate to false.
+        
             out=[];
             x=cell(length(fields),1); % pre-alloc
             for k=1:length(fields)

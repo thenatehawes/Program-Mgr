@@ -1,13 +1,23 @@
 classdef program<tree
-    %PROGRAM Summary of this class goes here
-    %   Detailed explanation goes here
+    % program Class
+    % N.B. Hawes
+    %
+    % This class has been written to make use of the tree . This class provides many
+    % different methods which allow attaching or adding another tree object
+    % to this tree, automatically labeling the level of tree objects under
+    % this tree object, and find tree objects by property values.
     
     properties (SetAccess=public)        
         name % Name of the object database
         info % Info associated with object database
+        id % Tree id
         children % These are the children of this program
         cost
         time
+    end
+    
+    properties (Hidden)
+        level=0;
     end
     
     methods
@@ -22,7 +32,9 @@ classdef program<tree
             % Optional Inputs:
             % tasks - 1xn task - task objects to populate into the tree
             %
-            % Example:
+            % Example: prgm=program('myProgram','Prog Info',childtasks);
+            % This will createa a program object and populate the
+            % childtasks as the program's children.
             
             
             if nargin<3 % if less than 3 
@@ -31,23 +43,11 @@ classdef program<tree
             
             obj.name=name;
             obj.info=info;
+            obj.id=[];
             
             for i=1:length(tasks)
                 attachchild(obj,tasks(i));
             end
-            
-        end
-        
-        function attachchild(progobj,childobj)
-            
-            progobj.children=[progobj.children childobj];
-            
-        end
-        
-        function addchild(a)
-            
-            b=1;
-            disp(a);
             
         end
         

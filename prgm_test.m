@@ -99,8 +99,10 @@ end
 update(prgm);
 
 chk=[prgm.cost,prgm.time];
+randsum=[sum(rand1),sum(rand2)];
+chk=(chk-randsum);
 
-if chk(1)==sum(rand1)&&chk(2)==sum(rand2)
+if all(chk<1e-10)
     disp('%...Passed')
 else
     disp('...Failed')
