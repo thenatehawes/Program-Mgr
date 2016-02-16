@@ -38,14 +38,16 @@ task3=addchild(prgm,'Task3','',subtask3_1); % Add task3 directly to prgm and hav
 
 % Make a 2nd program and try to attach it to prgm, this should fail
 disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
-disp('% Checking double attachment')
+disp('% Checking program and double attachment')
 prgm2=program('myProgram2','this is the second one');
 good=0;
 try
    attachchild(prgm,prgm2)
 catch err
-   good=strcmp(err.message,'Cannot attach a program object to anything');
+   good=strcmp(err.message,'Child must be a tree object');
 end
+
+
 
 if good
     disp('% ...Passed')
@@ -73,8 +75,8 @@ subtask3_1.time=5;
 subtask1_2_1.cost=2000;
 subtask1_2_1.time=100;
 
-[flag,expensive_tree]=findchild(prgm,@(x1,x2) x1>10&&x2>1000,{'time','cost'});
-foundexpensive=all(ismember(expensive_tree,[subtask1_1,subtask1_2_1]))&& ~any(ismember(expensive_tree,[subtask3_1])
+[flag,expensive_tree]=findchild(prgm,@(x1,x2) x1>10&x2>1000,{'time','cost'});
+foundexpensive=all(ismember(expensive_tree,[subtask1_1,subtask1_2_1]))&& ~any(ismember(expensive_tree,[subtask3_1]));
 
 if foundleaves && foundtree && foundexpensive
     disp('% ...Passed')
@@ -99,8 +101,10 @@ end
 update(prgm);
 
 chk=[prgm.cost,prgm.time];
+randsum=[sum(rand1),sum(rand2)];
+chk=(chk-randsum);
 
-if chk(1)==sum(rand1)&&chk(2)==sum(rand2)
+if all(chk<1e-10)
     disp('%...Passed')
 else
     disp('...Failed')

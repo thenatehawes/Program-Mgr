@@ -1,4 +1,4 @@
-classdef program<tree
+classdef program<root
     % program Class
     % N.B. Hawes
     %
@@ -47,6 +47,74 @@ classdef program<tree
             for i=1:length(tasks)
                 attachchild(obj,tasks(i));
             end
+            
+        end
+        
+        function out=updatecost(treeobj)
+           
+            if isempty(treeobj.children)
+                
+                if isempty(treeobj.cost)
+                    treeobj.cost=0;
+                end
+                
+                if isempty(treeobj.time)
+                    treeobj.time=0;
+                end
+                
+                out=[treeobj.cost,treeobj.time];
+                
+            else
+            
+                out=[0,0];
+
+                for i=1:length(treeobj.children)
+                    
+                    outtmp=updatecost(treeobj.children(i));
+                    out=out+outtmp;
+
+                end
+                
+                treeobj.cost=out(1);
+                treeobj.time=out(2);
+        
+            end
+        end
+        
+        function obj=addchild(parentobj,name,info,children)
+        % addchild function
+        %
+        % Inputs:
+        % parentobj - 1x1 tree - parent tree to which the child tree is attached
+        % name - 1xn string - name of the child tree to be added
+        % info - 1xn string - info of the child tree to be added
+        % children - 1xn tree - tree objects which should be the children
+        % of the child object
+        %
+        % Example:
+        % childobj=addchild(parent_tree,'myChild','Child Tree Object',grandchild);
+        %
+        % This example will call the task constructor to create the child
+        % and attach it to the parent object.
+            obj=task(name,info,parentobj,children);
+            
+        end
+        
+        function update(treeobj)
+        % update function
+        %
+        % Inputs:
+        % treeobj - 1x1 tree - tree object to be updated
+        %
+        % Example:
+        % update(tree_obj);
+        %
+        % This example will update the tree object and all children,
+        % grandchildren, etc. of the tree object. This will update the
+        % cost&time fields, update the levels, and update the ids.
+            
+            updatecost(treeobj);
+            update@root(treeobj); % Call superclass update
             
         end
         

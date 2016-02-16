@@ -1,4 +1,4 @@
-classdef tree < handle
+classdef tree < root
     % tree Class
     % N.B. Hawes
     %
@@ -14,252 +14,133 @@ classdef tree < handle
     % implement this now, but I may at some point in the future.
     
     properties (SetAccess=public,Abstract)        
-        name % Name of the object database
-        info % Info associated with object database
-        id % tree id
-        children % These are the children of this program
-        cost % Cost of tree object
-        time % Time of tree object
+        parent % This task's immediate parent
     end
     
-    properties(Hidden,Abstract)
-        level % Level of tree object within a tree
-    end
-    
-    methods
+    methods               
         
-        function attachchild(parentobj,childobj)
-        % attachchild function
-        %
-        % Inputs:
-        % parentobj - 1x1 tree - parent tree to which the child tree is attached
-        % childobj - 1x1 tree - child tree to attach
-        %
-        % Example:
-        % attachchild(parent_tree,child_tree);
-        %
-        % This example will attach the child_tree to the parent_tree and
-        % automatically update the child_tree's parent field
+        function removechild(childobj,varargin)
+            % removechild method
+            %
+            % Inputs:
+            % childobj - 1x1 task object - child object to remove from it's parents
+            %
+            % Optional Inputs:
+            % 'skip' - This varargin will skip checking if the child object is empty
+            %
+            % Example: removechild(childobj)
+            % This example will remove the child object from it's parent
+            %
+            % removechild(childobj,'skip')
+            % This example will not ask if you're sure you want to remove a
+            % child that itself has children.
             
-            if strcmp(class(childobj),'program')
-                error('Cannot attach a program object to anything')
-            elseif any(parentobj.children==childobj)
-                error('That child is already attached to this task')
-            elseif ~isempty(childobj.parent)
-                error('Child already has a parent')
-            end
-            
-            parentobj.children=[parentobj.children childobj];
-            childobj.parent=parentobj;
-            
-        end
-        
-        function obj=addchild(parentobj,name,info,children)
-        % addchild function
-        %
-        % Inputs:
-        % parentobj - 1x1 tree - parent tree to which the child tree is attached
-        % name - 1xn string - name of the child tree to be added
-        % info - 1xn string - info of the child tree to be added
-        % children - 1xn tree - tree objects which should be the children
-        % of the child object
-        %
-        % Example:
-        % childobj=addchild(parent_tree,'myChild','Child Tree Object',grandchild);
-        %
-        % This example will call the task constructor to create the child
-        % and attach it to the parent object.
-            obj=task(name,info,parentobj,children);
-            
-        end
-        
-        function update(treeobj)
-        % update function
-        %
-        % Inputs:
-        % treeobj - 1x1 tree - tree object to be updated
-        %
-        % Example:
-        % update(tree_obj);
-        %
-        % This example will update the tree object and all children,
-        % grandchildren, etc. of the tree object. This will update the
-        % cost&time fields, update the levels, and update the ids.
-            
-            updateid(treeobj);
-            updatelvl(treeobj);
-            updatecost(treeobj);
-            
-        end
-        
-        function updatelvl(treeobj)
-           
-           if strcmp(class(treeobj),'program')
-               treeobj.level=1;
-           else
+            skip=0;
+            for i=1:length(varargin)
                
-               parentobj=treeobj.parent;
+                if strcmpi(varargin{i},'skip')
+                    skip=1;
+                end
+                
+            end
+            
+            cont=1;
+            if ~isempty(childobj.children)&&~skip
+                cont=input('Child object is not empty, do you want to continue? (1-yes, 0-no)');
+            end
+            
+            if cont
+                parentobj=childobj.parent;
+                childobj.parent=[];
+                parentobj.children(parentobj.children==childobj)=[];
+                
+            end
+        end
+        
+        function destroychild(childobj,varargin)
+            % destroychild method
+            %
+            % Inputs:
+            % childobj - 1x1 task object - child object to destroy
+            %
+            % Optional Inputs:
+            % 'skip' - This varargin will skip checking if the child object is empty
+            %
+            % Example: destroychild(childobj)
+            % This example will delete a childobject
+            %
+            % removechild(childobj,'skip')
+            % This example will not ask if you're sure you want to destroy a
+            % child that itself has children.
+
+            skip=0;
+            for i=1:length(varargin)
                
-               if isempty(parentobj.level)
-                   parentobj.level=0;
-               end
-               
-               treeobj.level=parentobj.level+1;
-               
-           end
-           
-           for i=1:length(treeobj.children)
-               updatelvl(treeobj.children(i))
-           end
-            
-        end
-          
-        function updateid(treeobj,ind)
-            
-            if nargin==1,
-                ind=1;
-            end
-            
-            if strcmp(class(treeobj),'program')
-                treeobj.id='1.';
-            else
-                parentobj=treeobj.parent;
-                treeobj.id=[parentobj.id num2str(ind) '.'];
-            end
-            
-            for i=1:length(treeobj.children)
-                updateid(treeobj.children(i),i);
-            end
-                
-            
-        end
-        
-        function out=updatecost(treeobj)
-           
-            if isempty(treeobj.children)
-                
-                if isempty(treeobj.cost)
-                    treeobj.cost=0;
+                if strcmpi(varargin{i},'skip')
+                    skip=1;
                 end
                 
-                if isempty(treeobj.time)
-                    treeobj.time=0;
-                end
-                
-                out=[treeobj.cost,treeobj.time];
-                
-            else
-            
-                out=[0,0];
-
-                for i=1:length(treeobj.children)
-                    
-                    outtmp=updatecost(treeobj.children(i));
-                    out=out+outtmp;
-
-                end
-                
-                treeobj.cost=out(1);
-                treeobj.time=out(2);
-        
-            end
-        end
-        
-        function [flag,out]=findchild(treeobj,fh,fields)
-        % findchild function
-        %
-        % Inputs:
-        % treeobj - 1x1 tree - tree to query
-        % fh - 1x1 function handle - function handle to use for querying
-        % fields - nx1 cell array - fields to check each query against
-        %
-        % Example:
-        % [flag,objects]=findchild(treeobj,@(x1,x2,x3)
-        % (x1==3&&x2>1000)||x3>50,{'level','cost','time'});
-        %
-        % This example will return any objects are on level 3 with a cost
-        % greater than 1000 or has a time greater than 50. Note that if any
-        % levels, cost, or time are empty vectors the above will error. If
-        % there's any chance that the tree fields may be empty then use the
-        % below version.
-        %
-        % [flag,objects]=findchild(treeobj,@(x1,x2,x3)
-        % (x1==3&x2>1000)|x3>50,{'level','cost','time'});
-        %
-        % The only difference is using & and | instead of && and ||. Empty
-        % fields will effectively evaluate to false.
-        
-            out=[];
-            x=cell(length(fields),1); % pre-alloc
-            for k=1:length(fields)
-                x{k}=treeobj.(fields{k});
-            end
-            % If this tree obj matches, the fh & fields, then add it to the
-            % output vector
-            if fh(x{:})
-                out=[out,treeobj];
-            end
-            % Then run it recursively for all children too
-            for i=1:length(treeobj.children)
-                [flagtmp,outtmp]=findchild(treeobj.children(i),fh,fields);
-                out=[out,outtmp];
             end
             
-            if isempty(out)
-                flag=0;
-            else
-                flag=1;
+            cont=1;
+            if ~isempty(childobj.children)&&~skip
+                cont=input('Child object is not empty, do you want to continue? (1-yes, 0-no)');
+            end
+            
+            if cont
+                removechild(childobj);
+                delete(childobj)
             end
             
         end
         
-        % Overrides
-        
-        function disp(obj)
+        function promote(childobj)
+            % promote method
+            %
+            % Inputs:
+            % childobj - 1x1 task object - child object to promote
+            %
+            % Example: promote(childobj)
+            % This example will promote the childobj to be a child of it's
+            % grandparent
             
-            for i=1:length(obj)
-            
-            if isempty(obj(i).level)
-                lvl=0;
-            else
-                lvl=obj(i).level-1;
+            % Check if childobj has a parent or grandparent
+            if isempty(childobj.parent)
+                error('This object has no parents!')
+            elseif strcmp(class(childobj.parent),'program')
+                error('The parent object is of class program (and hence this object has no grandparent)')
             end
             
-            tmp=sprintf([repmat('\t',1,lvl) obj(i).id ' ' obj(i).name]);
-            disp(tmp);
+            % Find child object's parent object and grandparent object
+            parentobj=childobj.parent;
+            grandparentobj=parentobj.parent;
             
-            if ~isempty(obj(i).children)
-
-                for j=1:length(obj(i).children)
-                   disp(obj(i).children(j)) 
-                end
-
-            end
-            
-            end
+            % Remove the childobj from the parentobj's list of children
+            removechild(childobj,'skip');
+            % Add the childobj to the grandparentobj's list of children
+            attachchild(grandparentobj,childobj);
             
         end
         
-        function out=ismember(objs1,objs2)
+        function move(childobj,newparentobj)
+            % move method
+            %
+            % Inputs:
+            % childobj - 1x1 task object - child object to move
+            % newparentobj - 1x1 task object - new parent object to attach the child object to
+            %
+            % Example: move(childobj,newparentobj)
+            % This example will remove a child object from it's parents and
+            % attach it to the new parent object.
             
-            out=zeros(1,length(objs1));
+            % Remove the child obj from the formerparent
+            removechild(childobj,'skip');
             
-            for i=1:length(objs1)
-                
-                yes=0;
-                for j=1:length(objs2)
-                   
-                    if isequal(objs1(i),objs2(j))
-                        yes=1;
-                    end
-                    
-                end
-                
-                out(i)=yes;
-                
-            end
+            % Add the childobj to the newparentobj
+            attachchild(newparentobj,childobj);
             
         end
+        
         
     end
     

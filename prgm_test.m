@@ -38,16 +38,22 @@ task3=addchild(prgm,'Task3','',subtask3_1); % Add task3 directly to prgm and hav
 
 % Make a 2nd program and try to attach it to prgm, this should fail
 disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
-disp('% Checking double attachment')
+disp('% Checking program and double attachment')
 prgm2=program('myProgram2','this is the second one');
 good=0;
 try
    attachchild(prgm,prgm2)
 catch err
-   good=strcmp(err.message,'Cannot attach a program object to anything');
+   good=strcmp(err.message,'Child must be a tree object');
 end
 
-if good
+try
+    attachchild(prgm,task3);
+catch err
+    good2=strcmp(err.message,'That child is already attached to this task');
+end
+
+if good&&good2
     disp('% ...Passed')
 else
     disp('% ...Failed')

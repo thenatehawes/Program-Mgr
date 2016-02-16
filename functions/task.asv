@@ -59,128 +59,50 @@ classdef task<tree
             
         end
         
-        function removechild(childobj,varargin)
-            % removechild method
-            %
-            % Inputs:
-            % childobj - 1xn task object - child object to remove from it's parents
-            %
-            % Optional Inputs:
-            % 'skip' - This varargin will skip checking if the child object is empty
-            %
-            % Example: removechild(childobj)
-            % This example will remove the child object from it's parent
-            %
-            % removechild(childobj,'skip')
-            % This example will not ask if you're sure you want to remove a
-            % child that itself has children.
-            
-            skip=0;
-            for i=1:length(varargin)
-               
-                if strcmpi(varargin{i},'skip')
-                    skip=1;
-                end
-                
-            end
-            
-            cont=1;
-            if ~isempty(childobj.children)&&~skip
-                cont=input('Child object is not empty, do you want to continue? (1-yes, 0-no)');
-            end
-            
-            if cont
-                parentobj=childobj.parent;
-                childobj.parent=[];
-                parentobj.children(parentobj.children==childobj)=[];
-                
-            end
-        end
+        function obj=addchild(parentobj,name,info,children)
+        % addchild function
+        %
+        % Inputs:
+        % parentobj - 1x1 tree - parent tree to which the child tree is attached
+        % name - 1xn string - name of the child tree to be added
+        % info - 1xn string - info of the child tree to be added
+        % children - 1xn tree - tree objects which should be the children
+        % of the child object
+        %
+        % Example:
+        % childobj=addchild(parent_tree,'myChild','Child Tree Object',grandchild);
+        %
+        % This example will call the task constructor to create the child
+        % and attach it to the parent object.
         
-        function destroychild(childobj,varargin)
-            % destroychild method
-            %
-            % Inputs:
-            % childobj - 1xn task object - child object to destroy
-            %
-            % Optional Inputs:
-            % 'skip' - This varargin will skip checking if the child object is empty
-            %
-            % Example: destroychild(childobj)
-            % This example will delete a childobject
-            %
-            % removechild(childobj,'skip')
-            % This example will not ask if you're sure you want to destroy a
-            % child that itself has children.
-
-            skip=0;
-            for i=1:length(varargin)
-               
-                if strcmpi(varargin{i},'skip')
-                    skip=1;
-                end
-                
-            end
+        obj=addchild@program(name,info,parentobj,children);
+        %obj=task(name,info,parentobj,children);
             
-            cont=1;
-            if ~isempty(childobj.children)&&~skip
-                cont=input('Child object is not empty, do you want to continue? (1-yes, 0-no)');
-            end
-            
-            if cont
-                removechild(childobj);
-                delete(childobj)
-            end
+        end        
+        
+        function out=updatecost(treeobj)
+           
+            out=updatecost@program(treeobj);
             
         end
         
-        function promote(childobj)
-            % promote method
-            %
-            % Inputs:
-            % childobj - 1xn task object - child object to promote
-            %
-            % Example: promote(childobj)
-            % This example will promote the childobj to be a child of it's
-            % grandparent
+        function update(treeobj)
+        % update function
+        %
+        % Inputs:
+        % treeobj - 1x1 tree - tree object to be updated
+        %
+        % Example:
+        % update(tree_obj);
+        %
+        % This example will update the tree object and all children,
+        % grandchildren, etc. of the tree object. This will update the
+        % cost&time fields, update the levels, and update the ids.
             
-            % Check if childobj has a parent or grandparent
-            if isempty(childobj.parent)
-                error('This object has no parents!')
-            elseif strcmp(class(childobj.parent),'program')
-                error('The parent object is of class program (and hence this object has no grandparent)')
-            end
-            
-            % Find child object's parent object and grandparent object
-            parentobj=childobj.parent;
-            grandparentobj=parentobj.parent;
-            
-            % Remove the childobj from the parentobj's list of children
-            removechild(childobj,'skip');
-            % Add the childobj to the grandparentobj's list of children
-            attachchild(grandparentobj,childobj);
+%             updatecost(treeobj);
+            update@program(treeobj); % Call superclass update
             
         end
-        
-        function move(childobj,newparentobj)
-            % move method
-            %
-            % Inputs:
-            % childobj - 1xn task object - child object to move
-            % newparentobj - 1x1 task object - new parent object to 
-            %
-            % Example: promote(childobj)
-            % This example will promote the childobj to be a child of it's
-            % grandparent
-            
-            % Remove the child obj from the formerparent
-            removechild(childobj);
-            
-            % Add the childobj to the newparentobj
-            attachchild(newparentobj,childobj);
-            
-        end
-        
         
     end
     
